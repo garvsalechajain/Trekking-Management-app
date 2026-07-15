@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12 d-flex justify-content-between align-items-center">
+        <h2>Search Results for "{{ query }}"</h2>
+        <a href="{{ url_for('staff_dashboard') }}" class="btn btn-outline">Back to Dashboard</a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header bg-success text-white">Assigned Treks</div>
+            <div class="card-body">
+                {% if treks %}
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Trek Name</th>
+                            <th>Location</th>
+                            <th>Start Date</th>
+                            <th>End Date</th>
+                            <th>Status</th>
+                            <th>Available Slots</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for trek in treks %}
+                        <tr>
+                            <td>{{ trek.name }}</td>
+                            <td>{{ trek.location }}</td>
+                            <td>{{ trek.start_date }}</td>
+                            <td>{{ trek.end_date }}</td>
+                            <td>
+                                <span class="badge 
+                                    {% if trek.status == 'Open' %}bg-success
+                                    {% elif trek.status == 'Closed' %}bg-warning
+                                    {% elif trek.status == 'Completed' %}bg-info
+                                    {% else %}bg-secondary{% endif %}">
+                                    {{ trek.status }}
+                                </span>
+                            </td>
+                            <td>{{ trek.slots }}</td>
+                            <td>
+                                <a href="{{ url_for('manage_trek', trek_id=trek.id) }}" class="btn btn-sm btn-primary">Manage Trek</a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                {% else %}
+                <p>No assigned treks found matching your search.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,229 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <h2>Admin Dashboard</h2>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="card mb-3">
+            <div class="card-body">
+                <h5 class="card-title text-main">Total Treks</h5>
+                <h3 class="card-text text-main" style="color: var(--accent-color);">{{ total_treks }}</h3>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card mb-3">
+            <div class="card-body">
+                <h5 class="card-title text-main">Total Users</h5>
+                <h3 class="card-text text-main" style="color: var(--accent-color);">{{ total_users }}</h3>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card mb-3">
+            <div class="card-body">
+                <h5 class="card-title text-main">Total Staff</h5>
+                <h3 class="card-text text-main" style="color: var(--accent-color);">{{ total_staff }}</h3>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card mb-3">
+            <div class="card-body">
+                <h5 class="card-title text-main">Total Bookings</h5>
+                <h3 class="card-text text-main" style="color: var(--accent-color);">{{ total_bookings }}</h3>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Search Bar -->
+<div class="card mb-4">
+    <div class="card-body">
+        <form action="{{ url_for('admin_search') }}" method="GET" class="d-flex">
+            <input class="form-control me-2" type="search" placeholder="Search Users, Staff, or Treks..." name="q" required>
+            <button class="btn btn-outline-success" type="submit">Search</button>
+        </form>
+    </div>
+</div>
+
+<!-- Pending Staff Approval -->
+{% if pending_staff %}
+<div class="card mb-4 border-danger">
+    <div class="card-header bg-danger text-white">Pending Staff Approvals</div>
+    <div class="card-body">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Username</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for staff in pending_staff %}
+                <tr>
+                    <td>{{ staff.username }}</td>
+                    <td>
+                        <form action="{{ url_for('approve_staff', staff_id=staff.id) }}" method="POST" style="display:inline;">
+                            <button type="submit" class="btn btn-sm btn-success">Approve</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endif %}
+
+<!-- Manage Treks -->
+<div class="card mb-4">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <span>Manage Treks</span>
+        <a href="{{ url_for('new_trek') }}" class="btn btn-sm btn-primary">Create New Trek</a>
+    </div>
+    <div class="card-body">
+        
+        <!-- Open Treks -->
+        <h5 style="color: var(--accent-color);">Open Treks</h5>
+        <div class="table-responsive mb-4">
+            <table class="table table-striped">
+                <thead>
+                    <tr><th>ID</th><th>Name</th><th>Location</th><th>Slots</th><th>Assigned Staff</th><th>Actions</th></tr>
+                </thead>
+                <tbody>
+                    {% for trek in treks if trek.status == 'Open' %}
+                    <tr>
+                        <td>{{ trek.id }}</td><td>{{ trek.name }}</td><td>{{ trek.location }}</td><td>{{ trek.slots }}</td>
+                        <td>
+                            <form action="{{ url_for('assign_staff') }}" method="POST" class="d-flex align-items-center" style="margin: 0;">
+                                <input type="hidden" name="trek_id" value="{{ trek.id }}">
+                                <select name="staff_id" class="form-select form-select-sm me-1" style="width: auto; padding: 0.2rem; margin-bottom: 0;" required>
+                                    <option value="" disabled {% if not trek.assigned_staff %}selected{% endif %}>Select Staff</option>
+                                    {% for staff in staffs if staff.status == 'Approved' %}
+                                        <option value="{{ staff.id }}" {% if trek.assigned_staff_id == staff.id %}selected{% endif %}>{{ staff.username }}</option>
+                                    {% endfor %}
+                                </select>
+                                <button type="submit" class="btn btn-sm btn-primary" style="padding: 0.2rem 0.5rem;">Assign</button>
+                            </form>
+                        </td>
+                        <td>
+                            <div class="d-flex" style="gap: 5px;">
+                                <a href="{{ url_for('edit_trek', trek_id=trek.id) }}" class="btn btn-sm btn-outline">Edit</a>
+                                <form action="{{ url_for('delete_trek', trek_id=trek.id) }}" method="POST" onsubmit="return confirm('Delete this trek?');">
+                                    <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr><td colspan="6">No open treks.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Completed/Closed Treks -->
+        <h5 style="color: var(--accent-color);">Completed / Closed Treks</h5>
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead>
+                    <tr><th>ID</th><th>Name</th><th>Location</th><th>Status</th><th>Actions</th></tr>
+                </thead>
+                <tbody>
+                    {% for trek in treks if trek.status != 'Open' %}
+                    <tr>
+                        <td>{{ trek.id }}</td><td>{{ trek.name }}</td><td>{{ trek.location }}</td>
+                        <td><span class="badge">{{ trek.status }}</span></td>
+                        <td>
+                            <div class="d-flex" style="gap: 5px;">
+                                <a href="{{ url_for('edit_trek', trek_id=trek.id) }}" class="btn btn-sm btn-outline">Edit</a>
+                                <form action="{{ url_for('delete_trek', trek_id=trek.id) }}" method="POST" onsubmit="return confirm('Delete this trek?');">
+                                    <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr><td colspan="5">No completed/closed treks.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        
+    </div>
+</div>
+
+<!-- Users and Staff Management -->
+<div class="row">
+    <div class="col-12 mb-4">
+        <div class="card">
+            <div class="card-header">All Users (Trekkers)</div>
+            <div class="card-body table-responsive">
+                <table class="table table-striped">
+                    <thead><tr><th>ID</th><th>Username</th><th>Bookings</th><th>Status</th><th>Action</th></tr></thead>
+                    <tbody>
+                        {% for user in users %}
+                        <tr>
+                            <td>{{ user.id }}</td>
+                            <td>{{ user.username }}</td>
+                            <td>{{ user.bookings|length }}</td>
+                            <td>{{ user.status }}</td>
+                            <td>
+                                {% if user.status != 'Blacklisted' %}
+                                <form action="{{ url_for('blacklist_user', user_id=user.id) }}" method="POST" style="margin: 0;">
+                                    <button type="submit" class="btn btn-sm btn-danger">Blacklist</button>
+                                </form>
+                                {% else %}
+                                <form action="{{ url_for('unblacklist_user', user_id=user.id) }}" method="POST" style="margin: 0;">
+                                    <button type="submit" class="btn btn-sm btn-success">Unblacklist</button>
+                                </form>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-12 mb-4">
+        <div class="card">
+            <div class="card-header">All Staff</div>
+            <div class="card-body table-responsive">
+                <table class="table table-striped">
+                    <thead><tr><th>ID</th><th>Username</th><th>Assigned Treks</th><th>Status</th><th>Action</th></tr></thead>
+                    <tbody>
+                        {% for staff in staffs %}
+                        <tr>
+                            <td>{{ staff.id }}</td>
+                            <td>{{ staff.username }}</td>
+                            <td>{{ staff.assigned_treks|length }}</td>
+                            <td>{{ staff.status }}</td>
+                            <td>
+                                {% if staff.status != 'Blacklisted' %}
+                                <form action="{{ url_for('blacklist_user', user_id=staff.id) }}" method="POST" style="margin: 0;">
+                                    <button type="submit" class="btn btn-sm btn-danger">Blacklist</button>
+                                </form>
+                                {% else %}
+                                <form action="{{ url_for('unblacklist_user', user_id=staff.id) }}" method="POST" style="margin: 0;">
+                                    <button type="submit" class="btn btn-sm btn-success">Unblacklist</button>
+                                </form>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

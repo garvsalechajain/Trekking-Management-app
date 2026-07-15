@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <h2>Manage Trek: {{ trek.name }}</h2>
+        <a href="{{ url_for('staff_dashboard') }}" class="btn btn-sm btn-secondary mb-3">Back to Dashboard</a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-5">
+        <!-- Update Form -->
+        <div class="card mb-4">
+            <div class="card-header bg-primary text-white">Update Trek Details</div>
+            <div class="card-body">
+                <form action="{{ url_for('manage_trek', trek_id=trek.id) }}" method="POST">
+                    <div class="mb-3">
+                        <label for="slots" class="form-label">Available Slots</label>
+                        <input type="number" class="form-control" id="slots" name="slots" value="{{ trek.slots }}" min="0" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="status" class="form-label">Trek Status</label>
+                        <select class="form-select" id="status" name="status" required>
+                            <option value="Open" {% if trek.status == 'Open' %}selected{% endif %}>Open</option>
+                            <option value="Closed" {% if trek.status == 'Closed' %}selected{% endif %}>Closed</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100 mb-2">Update Details</button>
+                </form>
+                
+                <hr>
+                
+                <form action="{{ url_for('complete_trek', trek_id=trek.id) }}" method="POST" onsubmit="return confirm('Are you sure you want to mark this trek as completed? This action cannot be undone.');">
+                    <button type="submit" class="btn btn-success w-100" {% if trek.status == 'Completed' %}disabled{% endif %}>Mark as Completed</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-7">
+        <!-- Participants List -->
+        <div class="card">
+            <div class="card-header bg-info text-white">Participants ({{ bookings|length }} Bookings)</div>
+            <div class="card-body table-responsive">
+                {% if bookings %}
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Trekker Name</th>
+                            <th>Booking Date</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for booking in bookings %}
+                        <tr>
+                            <td>{{ booking.trekker.username }}</td>
+                            <td>{{ booking.booking_date.strftime('%Y-%m-%d %H:%M') }}</td>
+                            <td><span class="badge bg-secondary">{{ booking.status }}</span></td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                {% else %}
+                <p>No participants have booked this trek yet.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

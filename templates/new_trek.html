@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+    <h2>Publish a New Expedition Route</h2>
+    <a href="{{ url_for('admin_dashboard') }}" class="btn" style="background-color: #64748b;">Back to Dashboard</a>
+</div>
+
+<div class="card" style="max-width: 600px; margin: 0 auto;">
+    <form action="/trek/create" method="POST">
+        <label for="name">Trek Name</label>
+        <input type="text" id="name" name="name" required>
+        
+        <label for="location">Location</label>
+        <input type="text" id="location" name="location" required>
+        
+        <label for="difficulty">Difficulty</label>
+        <select id="difficulty" name="difficulty" required>
+            <option value="Easy">Easy</option>
+            <option value="Moderate">Moderate</option>
+            <option value="Hard">Hard</option>
+            <option value="Expert">Expert</option>
+        </select>
+        
+                <label for="slots" style="display: block; margin-top: 1rem;">Total Slots</label>
+        <input type="number" id="slots" name="slots" min="1" required style="margin-bottom: 1.5rem; width: 100%; padding: 0.5rem; box-sizing: border-box; border: 1px solid var(--border-color); border-radius: 4px; display: block;">
+
+        <label for="status">Trek Status</label>
+        <select id="status" name="status" required style="margin-bottom: 1.5rem; width: 100%; padding: 0.5rem; box-sizing: border-box; border: 1px solid var(--border-color); border-radius: 4px;">
+            <option value="Open">Open</option>
+            <option value="Pending">Pending</option>
+        </select>
+
+        <br>
+        <label for="assigned_staff_id">Assigned Staff ID</label>
+        <input type="number" id="assigned_staff_id" name="assigned_staff_id" style="margin-bottom: 1.5rem; width: 100%; padding: 0.5rem; box-sizing: border-box; border: 1px solid var(--border-color); border-radius: 4px;">
+
+        
+
+        <label for="start_date">Start Date:</label>
+        <input type="date" id="start_date" name="start_date" required style="margin-bottom: 1rem; width: 100%; padding: 0.5rem; box-sizing: border-box; border: 1px solid var(--border-color); border-radius: 4px;">
+
+        <label for="end_date">End Date:</label>
+        <input type="date" id="end_date" name="end_date" required style="margin-bottom: 1.5rem; width: 100%; padding: 0.5rem; box-sizing: border-box; border: 1px solid var(--border-color); border-radius: 4px;">
+        
+        <button type="submit" style="width: 100%;">Create Trek</button>
+    </form>
+</div>
+{% endblock %}

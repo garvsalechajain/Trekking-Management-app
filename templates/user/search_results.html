@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <h2>Search Results for "{{ query }}"</h2>
+        <a href="{{ url_for('user_dashboard') }}" class="btn btn-sm btn-secondary mb-3">Back to Dashboard</a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header bg-success text-white">Matched Open Treks</div>
+            <div class="card-body">
+                {% if treks %}
+                <div class="row">
+                    {% for trek in treks %}
+                    <div class="col-md-4 mb-3">
+                        <div class="card h-100">
+                            <div class="card-body">
+                                <h5 class="card-title text-primary">{{ trek.name }}</h5>
+                                <h6 class="card-subtitle mb-2 text-muted">{{ trek.location }}</h6>
+                                <p class="card-text mb-1"><small><strong>Difficulty:</strong> {{ trek.difficulty }}</small></p>
+                                <p class="card-text mb-1"><small><strong>Dates:</strong> {{ trek.start_date }} to {{ trek.end_date }}</small></p>
+                                <p class="card-text mb-2"><small><strong>Available Slots:</strong> {{ trek.slots }}</small></p>
+                                
+                                <form action="{{ url_for('book_trek', trek_id=trek.id) }}" method="POST">
+                                    <button type="submit" class="btn btn-sm btn-success w-100" {% if trek.slots < 1 %}disabled{% endif %}>
+                                        {% if trek.slots > 0 %}Book Now{% else %}Full{% endif %}
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <p>No open treks found matching your criteria.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

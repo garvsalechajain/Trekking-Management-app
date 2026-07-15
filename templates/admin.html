@@ -1,0 +1,204 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div style="display: flex; justify-content: space-between; align-items: center;">
+    <h2>Admin Dashboard</h2>
+    <div>
+        <a href="{{ url_for('new_trek') }}" class="btn" style="margin-right: 10px;">New Trek</a>
+        <a href="{{ url_for('home') }}" class="btn">Logout</a>
+    </div>
+</div>
+
+<div class="grid" style="margin-bottom: 2rem;">
+    <div class="card" style="margin-bottom: 0;">
+        <h3 style="margin: 0; color: var(--text-light); font-size: 0.9rem;">Total Treks</h3>
+        <p style="font-size: 2rem; margin: 0.5rem 0 0 0; font-weight: bold;">{{ total_treks }}</p>
+    </div>
+    <div class="card" style="margin-bottom: 0;">
+        <h3 style="margin: 0; color: var(--text-light); font-size: 0.9rem;">Pending Staff Approvals</h3>
+        <p style="font-size: 2rem; margin: 0.5rem 0 0 0; font-weight: bold;">{{ pending_staff }}</p>
+    </div>
+    <div class="card" style="margin-bottom: 0;">
+        <h3 style="margin: 0; color: var(--text-light); font-size: 0.9rem;">Total Users</h3>
+        <p style="font-size: 2rem; margin: 0.5rem 0 0 0; font-weight: bold;">{{ total_users }}</p>
+    </div>
+
+    <div class="card" style="margin-bottom: 0;">
+        <h3 style="margin: 0; color: var(--text-light); font-size: 0.9rem;">Total Staff</h3>
+        <p style="font-size: 2rem; margin: 0.5rem 0 0 0; font-weight: bold;">{{ total_staff }}</p>
+    </div>
+    
+    <div class="card" style="margin-bottom: 0;">
+        <h3 style="margin: 0; color: var(--text-light); font-size: 0.9rem;">Total Bookings</h3>
+        <p style="font-size: 2rem; margin: 0.5rem 0 0 0; font-weight: bold;">{{ total_bookings }}</p>
+    </div>
+</div>
+
+
+
+
+<div style="display: flex; flex-direction: column; gap: 2rem; margin-top: 2rem;">
+    <div class="card" style="margin: 0;">
+        <h3 style="margin-top: 0;">Active Treks</h3>
+        <div style="overflow-x: auto;">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Trek Name</th>
+                        <th>Location</th>
+                        <th>Assigned Staff ID</th>
+                        <th>Delete</th>
+                    </tr>     
+                </thead>
+                <tbody> 
+                    {% for trek in active_treks %}
+                    <tr>
+                        <td>{{ trek.name }}</td>
+                        <td>{{ trek.location }}</td>
+                        <td>{{ trek.assigned_staff_id or 'None' }}</td>
+                        <td>
+                         <form method="POST" action="/trek/delete/{{ trek.id }}" style="display:inline;">
+                          <button type="submit" style="color:red; background: none; border: none; cursor: pointer;">🗑️ Delete</button>
+                         </form>
+
+                         <a href="/trek/edit/{{ trek.id }}" style="color: #0284c7; text-decoration: none; margin-right: 15px; font-size: 0.95rem;">✏️ Edit</a>  
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="4">No active treks found.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    
+    <div class="card" style="margin: 0;">
+        <h3 style="margin-top: 0;">Pending Treks</h3>
+        <div style="overflow-x: auto;">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Trek Name</th>
+                        <th>Location</th>
+                        <th>Assigned Staff ID</th>
+                        <th>Delete</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for trek in pending_treks %}
+                    <tr>
+                        <td>{{ trek.name }}</td>
+                        <td>{{ trek.location }}</td>
+                        <td>{{ trek.assigned_staff_id or 'None' }}</td>
+                        <td>
+                         <form method="POST" action="/trek/delete/{{ trek.id }}" style="display:inline;">
+                          <button type="submit" style="color:red; background: none; border: none;;">🗑️ Delete</button>
+                         </form>
+
+                         <a href="/trek/edit/{{ trek.id }}" style="color: #0284c7; text-decoration: none; margin-right: 15px; font-size: 0.95rem;">✏️ Edit</a>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="4">No pending treks found.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+ 
+
+    <div class="card" style="margin: 0;">
+        <h3 style="margin-top: 0;">Staff Details</h3>
+        <div style="overflow-x: auto;">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Id</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for staff in staff_details %}
+                    <tr>
+                        <td>{{ staff.username }}</td>
+                        <td>{{ staff.id }}</td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="4">No staff found.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
+
+    <div class="card" style="margin: 0;">
+        <h3 style="margin-top: 0;">User Details</h3>
+        <div style="overflow-x: auto;">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Id</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for user in user_details %}
+                    <tr>
+                        <td>{{ user.username }}</td>
+                        <td>{{ user.id }}</td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="4">No User found.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
+
+    <div class="card" style="margin: 0;">
+        <h3 style="margin-top: 0;">Booking Details</h3>
+        <div style="overflow-x: auto;">
+            <table>
+                <thead>
+                    <tr>
+                        <th>trek name</th>
+                        <th>Id</th>
+                        <th>status</th>
+                        <th>Trekker Id</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for booking in booking_details %}
+                    <tr>
+                        <td>{{ booking.trek_name }}</td>
+                        <td>{{ booking.id }}</td>
+                        <td>{{ booking.status }}</td>
+                        <td>{{ booking.trekker_id }}</td>
+
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="4">No Booking found.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+
+</div>
+
+
+{% endblock %}

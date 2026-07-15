@@ -1,0 +1,10 @@
+# Virtual environment
+.venv/
+
+# Python cache
+__pycache__/
+*.pyc
+
+# Flask instance (optional, if you don't want to track it)
+instance/
+

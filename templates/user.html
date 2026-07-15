@@ -1,0 +1,95 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+    <h2>Trekker Dashboard</h2>
+    <a href="{{ url_for('home') }}" class="btn">Logout</a>
+</div>
+
+<div class="card" style="margin-bottom: 2rem;">
+    <h3 style="margin-top: 0;">Update Profile</h3>
+    <form action="{{ url_for('edit_user_profile', user_id=user.id) }}" method="POST">
+        <div class="form-group">
+            <label for="email">Email:</label>
+            <input type="email" id="email" name="email" value="{{ user.email }}" class="form-control">
+        </div>
+        <div class="form-group">
+            <label for="contact_details">Contact Details:</label>
+            <textarea id="contact_details" name="contact_details" class="form-control">{{ user.contact_details or '' }}</textarea>
+        </div>
+        <button type="submit" class="btn">Update Profile</button>
+    </form>
+</div>
+
+<div class="card">
+    <h3 style="margin-top: 0;">Available Open Treks</h3>
+    <div style="overflow-x: auto;">
+        <table>
+            <thead>
+                <tr>
+                    <th>Trek Name</th>
+                    <th>Location</th>
+                    <th>Difficulty</th>
+                    <th>Slots Available</th>
+                    <th>Booking</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for trek in open_treks %}
+                <tr>
+                    <td><strong>{{ trek.name }}</strong></td>
+                    <td>{{ trek.location }}</td>
+                    <td>{{ trek.difficulty }}</td>
+                    <td>{{ trek.slots }}</td>
+                                        <td>
+                        {% if trek.slots > 0 %}
+                            <form action="{{ url_for('book_trek', user_id=user_id, trek_id=trek.id) }}" method="POST" style="margin: 0;">
+                                <button type="submit" style="padding: 0.4rem 0.8rem; font-size: 0.9rem;">Book Spot</button>
+                            </form>
+                        {% else %}
+                            <span style="color: red; font-weight: bold;">Full</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="5">No open treks available at this time.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="card">
+    <h3 style="margin-top: 0;">Your Booking History</h3>
+    <div style="overflow-x: auto;">
+        <table>
+            <thead>
+                <tr>
+                    <th>Booking ID</th>
+                    <th>Trek Name</th>
+                    <th>Booking Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for booking in bookings %}
+                <tr>
+                    <td>#{{ booking.id }}</td>
+                    <td>{{ booking.trek_name }}</td>
+                    <td>
+                        <span style="padding: 0.25rem 0.5rem; background: #e2e8f0; border-radius: 4px; font-size: 0.85rem;">
+                            {{ booking.status }}
+                        </span>
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="3">You have no booking history.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

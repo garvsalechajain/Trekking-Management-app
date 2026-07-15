@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+    <h2>Staff Dashboard</h2>
+    <a href="{{ url_for('home') }}" class="btn">Logout</a>
+</div>
+
+{% if profile and profile.status == 'Pending' %}
+<div class="alert">
+    Notice: Your account is <strong>Pending</strong> by administration. You may not modify treks yet.
+</div>
+{% elif profile and profile.status == 'Approved' %}
+<div class="alert" style="background-color: #dcfce7; color: #166534;">
+    Notice: Your account is <strong>Approved</strong> by administration.
+</div>
+{% endif %}
+
+<div class="card" style="max-width: 500px;">
+    <h3 style="margin-top: 0;">Update Trek Status</h3>
+    <form action="#" method="POST">
+        <label for="trek_id">Select Trek</label>
+        <select id="trek_id" name="trek_id">
+            <option value="">-- Choose Trek --</option>
+            
+            <option value="1">girnar</option>
+        </select>
+        
+        <label for="status">New Status</label>
+        <select id="status" name="status">
+            <option value="Open">Open</option>
+            <option value="Closed">Closed</option>
+            <option value="Completed">Completed</option>
+        </select>
+        
+        <button type="button">Update Status</button>
+    </form>
+</div>
+{% endblock %}

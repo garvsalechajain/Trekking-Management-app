@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header text-center">Your Profile</div>
+            <div class="card-body">
+                <form action="{{ url_for('staff_profile') }}" method="POST">
+                    <div class="mb-3">
+                        <label class="form-label">Username</label>
+                        <input type="text" class="form-control" name="username" value="{{ user.username }}" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Contact Details</label>
+                        <input type="text" class="form-control" name="contact_details" value="{{ user.contact_details or '' }}" placeholder="Phone or Email">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">New Password (leave blank to keep current)</label>
+                        <input type="password" class="form-control" name="password" placeholder="New Password">
+                    </div>
+                    <button type="submit" class="btn btn-success w-100">Update Profile</button>
+                    <a href="{{ url_for('staff_dashboard') }}" class="btn btn-outline mt-2 w-100" style="text-align:center; display:block; margin-top:10px;">Back to Dashboard</a>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
